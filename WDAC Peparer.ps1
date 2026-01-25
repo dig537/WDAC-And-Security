@@ -175,8 +175,6 @@ function Prepare--NamesForWDACPolicy {
         Select-String -Path $outXml -Pattern ($DenyNames + $DenyDevelopers) -SimpleMatch -ErrorAction SilentlyContinue | Select-Object -First 10
     } catch { }
 
-    Set-HVCIOptions -FilePath "C:\WDAC\WDACCustomPolicy.xml" -Strict
-
     return @{ Xml = $outXml; Cip = $outCip }
 }
 
@@ -326,8 +324,6 @@ function Prepare--DriverDevsForWDACPolicy {
                 else { Set-RuleOption -FilePath $PolicyPath -Option 3 -Delete -ErrorAction Stop; $log += "Удалён Audit mode (Option 3)" }
             }
 
-            Set-HVCIOptions -FilePath "C:\WDAC\WDACCustomPolicy.xml" -Strict
-
             return [pscustomobject]@{
                 PolicyPath = $PolicyPath
                 AddedRulesCount = $addedRules.Count
@@ -462,6 +458,8 @@ foreach ($policy in $policiesToRemove) {
     $outCip = Join-Path $outDir "WDACCustomPolicy.cip"
 
     Copy-Item -Path $examplePath -Destination $outXml -Force
+    sleep 0.5
+    Set-HVCIOptions -FilePath "C:\WDAC\WDACCustomPolicy.xml" -Strict
 Write-Output ""
 Write-Output "Готово."
 
@@ -628,7 +626,6 @@ function Prepare--DevsForWDACPolicy {
     }
 
     end {
-    Set-HVCIOptions -FilePath "C:\WDAC\WDACCustomPolicy.xml" -Strict
         return $result
     }
 }
