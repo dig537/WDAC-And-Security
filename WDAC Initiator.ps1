@@ -1,5 +1,12 @@
 ﻿Initialize--WDACPolicy
+
+# Существующие параметры:
+
 echo "######################################################"
-Prepare--DriverNamesForWDACPolicy -PathesToDriversWithNamesToDeny @("C:\Windows\System32\drivers\BTHUSB.SYS")
-Prepare--NamesForWDACPolicy -DenyNames @("Everything-1.4.1.1030.x64-Setup.exe") -Audit $false
-Prepare--DevsForWDACPolicy -DenyDevelopers @("Sophos Ltd") -SampleFile "E:\Загрузки\HitmanPro_x64.exe" -Audit $false
+Prepare--DevsForWDACPolicy -DenyDevelopers @("YANDEX LLC") -SampleFile "C:\WDAC\Samples\Yandex.exe"
+Prepare--NamesForWDACPolicy -DenyNames @("bcdedit.exe", "mracsvc.exe", "mracdrv1.sys")
+Prepare--DevsForWDACPolicy -DenyDevelopers @("VK Play LLC") -SampleFile "C:\WDAC\Samples\VKPlayLoader_4a36b8f180deb2daf6dfb24976b613dd.exe"
+
+# Новые параметры (после развёртки переместить в существующие):
+
+#Disable--Audit

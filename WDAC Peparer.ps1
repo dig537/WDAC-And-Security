@@ -1,4 +1,25 @@
-﻿function Prepare--NamesForWDACPolicy {
+﻿function Save--MyPC {
+
+    $path = "C:\Windows\System32\CodeIntegrity\CIPolicies\Active"
+
+    Get-ChildItem $path -File | Where-Object {
+        $_.CreationTime.Year -gt 2026
+    } | ForEach-Object {
+        Write-Host "Удаляю:" $_.FullName
+        Remove-Item $_.FullName -Force
+    }
+
+# Перезагрузка политик WDAC
+    if (Get-Command citool -ErrorAction SilentlyContinue) {
+        citool --refresh
+    } else {
+        Write-Warning "citool не найден"
+    }
+
+    Write-Host "Готово."
+
+}
+function Prepare--NamesForWDACPolicy {
     <#
     .SYNOPSIS
       Создаёт WDAC XML на базе AllowAll_EnableHVCI и добавляет deny-правила.
@@ -159,7 +180,6 @@
     return @{ Xml = $outXml; Cip = $outCip }
 }
 
-
 function Prepare--DriverDevsForWDACPolicy {
     <#
     .SYNOPSIS
@@ -198,7 +218,7 @@ function Prepare--DriverDevsForWDACPolicy {
         [string[]]$DenyDevelopers = @(),
         [bool]$Audit = $true,
         [string]$SampleFile,
-        [switch]$DenyFromSample,
+        [switch]$DenyFromSample = $true,
         [string]$PolicyPath = 'C:\WDAC\WDACCustomPolicy.xml',
         [switch]$DryRun
     )
@@ -327,6 +347,8 @@ function Prepare--DriverDevsForWDACPolicy {
 # Prepare-DriverDevsWDACPolicy -DenyDevelopers @('BadVendor')
 # Prepare-DriverDevsWDACPolicy -SampleFile 'C:\temp\BadSys.sys' -DenyFromSample -DryRun
 
+function Disable--Audit { Set-RuleOption -FilePath 'C:\WDAC\WDACCustomPolicy.xml' -Option 3 -Delete -ErrorAction Stop }
+function Constrain--Scripts--DANGEROUS { param($Confirm); if ($Confirm = "USE-SAVE--MYPC-TO-REVERSE!") { Set-RuleOption -FilePath 'C:\WDAC\WDACCustomPolicy.xml' -Option 11 -Delete -ErrorAction Stop } }
 
 function Initialize--WDACPolicy {
 
