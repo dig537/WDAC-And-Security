@@ -31,51 +31,51 @@
   <FileRules>
     <Allow ID="ID_ALLOW_A_1_0_0_0" FriendlyName="" FileName="*" />
     <Allow ID="ID_ALLOW_A_2_0_0_0" FriendlyName="" FileName="*" />
-    <Deny ID="ID_DENY_D_1_1_0" FriendlyName="*\bcdedit.exe FileRule" FilePath="*\bcdedit.exe" />
-    <Deny ID="ID_DENY_D_2_1_0" FriendlyName="*\mracsvc.exe FileRule" FilePath="*\mracsvc.exe" />
-    <Deny ID="ID_DENY_D_3_1_0" FriendlyName="*\mracdrv1.sys FileRule" FilePath="*\mracdrv1.sys" />
+    <Deny ID="ID_DENY_D_9_1_0" FriendlyName="*\bcdedit.exe FileRule" FilePath="*\bcdedit.exe" />
+    <Deny ID="ID_DENY_D_A_1_0" FriendlyName="*\mracsvc.exe FileRule" FilePath="*\mracsvc.exe" />
+    <Deny ID="ID_DENY_D_B_1_0" FriendlyName="*\mracdrv1.sys FileRule" FilePath="*\mracdrv1.sys" />
   </FileRules>
   <!--Signers-->
   <Signers>
-    <Signer ID="ID_SIGNER_S_1_1_0_0" Name="YANDEX LLC">
+    <Signer ID="ID_SIGNER_S_5_1_0_0" Name="YANDEX LLC">
       <CertRoot Type="TBS" Value="742A249FCF1044D53FD3FEE42E31E2C3B7669CD607ACB3F336EAC4CFD75DADC6" />
     </Signer>
-    <Signer ID="ID_SIGNER_S_2_1" Name="VK Play LLC">
+    <Signer ID="ID_SIGNER_S_6_1" Name="VK Play LLC">
       <CertRoot Type="TBS" Value="81F665DED6BBB1811D290A5245C31726104957708A7B8FE37052B1DCFC0345E2" />
     </Signer>
   </Signers>
   <!--Driver Signing Scenarios-->
   <SigningScenarios>
-    <SigningScenario Value="131" ID="ID_SIGNINGSCENARIO_DRIVERS_1" FriendlyName="Auto generated policy on 01-23-2026">
+    <SigningScenario Value="131" ID="ID_SIGNINGSCENARIO_DRIVERS_1" FriendlyName="Auto generated policy on 02-14-2026">
       <ProductSigners>
         <FileRulesRef>
           <FileRuleRef RuleID="ID_ALLOW_A_1_0_0_0" />
         </FileRulesRef>
       </ProductSigners>
     </SigningScenario>
-    <SigningScenario Value="12" ID="ID_SIGNINGSCENARIO_WINDOWS" FriendlyName="Auto generated policy on 01-23-2026">
+    <SigningScenario Value="12" ID="ID_SIGNINGSCENARIO_WINDOWS" FriendlyName="Auto generated policy on 02-14-2026">
       <ProductSigners>
         <DeniedSigners>
-          <DeniedSigner SignerId="ID_SIGNER_S_1_1_0_0" />
-          <DeniedSigner SignerId="ID_SIGNER_S_2_1" />
+          <DeniedSigner SignerId="ID_SIGNER_S_5_1_0_0" />
+          <DeniedSigner SignerId="ID_SIGNER_S_6_1" />
         </DeniedSigners>
         <FileRulesRef>
           <FileRuleRef RuleID="ID_ALLOW_A_2_0_0_0" />
-          <FileRuleRef RuleID="ID_DENY_D_1_1_0" />
-          <FileRuleRef RuleID="ID_DENY_D_2_1_0" />
-          <FileRuleRef RuleID="ID_DENY_D_3_1_0" />
+          <FileRuleRef RuleID="ID_DENY_D_9_1_0" />
+          <FileRuleRef RuleID="ID_DENY_D_A_1_0" />
+          <FileRuleRef RuleID="ID_DENY_D_B_1_0" />
         </FileRulesRef>
       </ProductSigners>
     </SigningScenario>
   </SigningScenarios>
   <UpdatePolicySigners />
   <CiSigners>
-    <CiSigner SignerId="ID_SIGNER_S_1_1_0_0" />
-    <CiSigner SignerId="ID_SIGNER_S_2_1" />
+    <CiSigner SignerId="ID_SIGNER_S_5_1_0_0" />
+    <CiSigner SignerId="ID_SIGNER_S_6_1" />
   </CiSigners>
-  <HvciOptions>2</HvciOptions>
-  <BasePolicyID>{66FB4A24-84BD-4E69-8153-D9D8F729AF64}</BasePolicyID>
-  <PolicyID>{66FB4A24-84BD-4E69-8153-D9D8F729AF64}</PolicyID>
+  <HvciOptions>0</HvciOptions>
+  <BasePolicyID>{F21912DF-8600-4424-B296-13F0E099E6CF}</BasePolicyID>
+  <PolicyID>{F21912DF-8600-4424-B296-13F0E099E6CF}</PolicyID>
   <Settings>
     <Setting Provider="AllHostIds" Key="AllKeys" ValueName="EnterpriseDefinedClsId">
       <Value>
@@ -89,7 +89,7 @@
     </Setting>
     <Setting Provider="PolicyInfo" Key="Information" ValueName="Name">
       <Value>
-        <String>WDAC_Custom_20260123_003102</String>
+        <String>WDAC_Custom_20260214_192648</String>
       </Value>
     </Setting>
   </Settings>

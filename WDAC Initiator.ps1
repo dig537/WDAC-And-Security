@@ -9,4 +9,4 @@ Prepare--DevsForWDACPolicy -DenyDevelopers @("VK Play LLC") -SampleFile "C:\WDAC
 
 # Новые параметры (после развёртки переместить в существующие):
 
-#Disable--Audit
+Disable--Audit
