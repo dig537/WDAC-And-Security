@@ -1,24 +1,74 @@
-﻿function Save--MyPC {
+function Save--MyPC {
+    Write-Host "=== Запуск очистки кастомных политик WDAC ===" -ForegroundColor Cyan
+    
+    # 1. Безопасно запускаем CiTool, перехватываем поток ввода/вывода и симулируем нажатие Enter
+    $pInfo = New-Object System.Diagnostics.ProcessStartInfo
+    $pInfo.FileName = "CiTool.exe"
+    $pInfo.Arguments = "-lp"
+    $pInfo.UseShellExecute = $false
+    $pInfo.RedirectStandardOutput = $true
+    $pInfo.RedirectStandardInput = $true
+    $pInfo.CreateNoWindow = $true
 
-    $path = "C:\Windows\System32\CodeIntegrity\CIPolicies\Active"
+    $proc = [System.Diagnostics.Process]::Start($pInfo)
+    # Отправляем Enter в процесс, чтобы он не ждал ручного нажатия
+    $proc.StandardInput.WriteLine()
+    $outputText = $proc.StandardOutput.ReadToEnd()
+    $proc.WaitForExit()
 
-    Get-ChildItem $path -File | Where-Object {
-        $_.CreationTime.Year -gt 2026
-    } | ForEach-Object {
-        Write-Host "Удаляю:" $_.FullName
-        Remove-Item $_.FullName -Force
+    # Разбираем полученный текст на блоки политик
+    $policyBlocks = $outputText -split 'Policy:' | Where-Object { $_ -match 'Policy ID:' }
+    $removedCount = 0
+
+    foreach ($block in $policyBlocks) {
+        # Извлекаем ID и Friendly Name
+        if ($block -match 'Policy ID:\s*(?<id>[a-f0-9-]+)') { $policyId = $Matches['id'].Trim() }
+        if ($block -match 'Friendly Name:\s*(?<name>.+)') { $friendlyName = $Matches['name'].Trim() }
+
+        # Проверяем, содержит ли имя слово "custom" (регистр не важен)
+        if ($friendlyName -like "*custom*") {
+            Write-Host "Найдена политика: '$friendlyName' (ID: $policyId)" -ForegroundColor Yellow
+            Write-Host "Удаление..." -NoNewline -ForegroundColor Gray
+            
+            # 2. Выполняем удаление с автоматической передачей Enter
+            $delInfo = New-Object System.Diagnostics.ProcessStartInfo
+            $delInfo.FileName = "CiTool.exe"
+            $delInfo.Arguments = "-rp $policyId"
+            $delInfo.UseShellExecute = $false
+            $delInfo.RedirectStandardInput = $true
+            $delInfo.CreateNoWindow = $true
+
+            $delProc = [System.Diagnostics.Process]::Start($delInfo)
+            $delProc.StandardInput.WriteLine() # Нажимаем Enter в процессе удаления
+            $delProc.WaitForExit()
+            
+            Write-Host " [УСПЕШНО]" -ForegroundColor Green
+            $removedCount++
+        }
     }
 
-# Перезагрузка политик WDAC
-    if (Get-Command citool -ErrorAction SilentlyContinue) {
-        citool --refresh
+    if ($removedCount -gt 0) {
+        Write-Host "`nПрименение изменений (обновление)..." -ForegroundColor Cyan
+        # 3. Финальный рефреш подсистемы с автонажатием Enter
+        $refInfo = New-Object System.Diagnostics.ProcessStartInfo
+        $refInfo.FileName = "CiTool.exe"
+        $refInfo.Arguments = "--refresh"
+        $refInfo.UseShellExecute = $false
+        $refInfo.RedirectStandardInput = $true
+        $refInfo.CreateNoWindow = $true
+
+        $refProc = [System.Diagnostics.Process]::Start($refInfo)
+        $refProc.StandardInput.WriteLine() # Нажимаем Enter в процессе обновления
+        $refProc.WaitForExit()
+
+        Write-Host "Всего удалено политик: $removedCount. Система приведена к заводским правилам." -ForegroundColor Green
     } else {
-        Write-Warning "citool не найден"
+        Write-Host "Политики со словом 'custom' в названии не найдены." -ForegroundColor Magenta
     }
-
-    Write-Host "Готово."
 
 }
+
+
 function Prepare--NamesForWDACPolicy {
     <#
     .SYNOPSIS
@@ -368,20 +418,6 @@ if (-not (Test-Path $activePath)) {
     Write-Error "Каталог не найден: $activePath"
     exit 1
 }
-
-# Всё, что создано ПОСЛЕ 31.12.2025 23:59:59
-$cutoffDate = Get-Date '2026-01-01'
-
-Write-Output "Поиск WDAC policies, созданных начиная с $cutoffDate"
-Write-Output "Каталог: $activePath"
-Write-Output ""
-
-$policiesToRemove = Get-ChildItem `
-    -Path $activePath `
-    -Filter '*.cip' `
-    -File `
-    -ErrorAction Stop |
-    Where-Object { $_.CreationTime -ge $cutoffDate }
 
 if (-not $policiesToRemove) {
     Write-Output "Политик для удаления не найдено."
